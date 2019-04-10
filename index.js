@@ -6,21 +6,25 @@ const cors = require("cors");
 const PORT = process.env.PORT || 5000;
 
 const userRouter = require("./routers/userRouter");
+const groupRouter = require("./routers/groupRouter");
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(
-	bodyParser.urlencoded({
-		// to support URL-encoded bodies
-		extended: true
-	})
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true
+  })
 );
 
 app.use(cors());
 
-//user Routes
+//user Route
 app.use("/user", userRouter);
+
+//group Route
+app.use("/group", groupRouter);
 
 //Spin up the server
 app.listen(process.env.PORT, () => {
-	console.log(`running at port: ${PORT}`);
+  console.log(`running at port: ${PORT}`);
 });
