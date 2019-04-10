@@ -178,6 +178,11 @@ class UserHandler {
 		client.query(query).then(result => {
 			const row = result.rows[0];
 			if (row === undefined) {
+				//TODO: Change to html response from another folder
+				res.json({
+					success: false,
+					message: "Verification failed, please try again"
+				});
 			}
 		});
 		//req.params.hash
