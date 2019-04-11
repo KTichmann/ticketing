@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { PASS } = process.env;
+const { PASS, EMAIL } = process.env;
 
 class Emailer {
 	constructor(email) {
@@ -19,7 +19,7 @@ class Emailer {
 		console.log("transporter created");
 
 		const mailOptions = {
-			from: "thebobewithyou@email.com",
+			from: EMAIL,
 			to: `${this.email}`,
 			subject: "TESTING",
 			html: "<p>Testing Body</p>"
