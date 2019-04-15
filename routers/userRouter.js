@@ -1,5 +1,5 @@
 const express = require("express");
-const userHandlerExports = require("../handlers/UserHandler");
+const userHandlerExports = require("../handlers/userHandler");
 const userHandler = userHandlerExports.userHandler;
 
 const userRouter = express.Router();

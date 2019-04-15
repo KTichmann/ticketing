@@ -25,3 +25,14 @@ create table admins
     username varchar NOT NULL,
     group_id varchar NOT NULL
 );
+
+create table tickets
+(
+    id SERIAL PRIMARY KEY,
+    group_id INT NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(200) NOT NULL,
+    reporter_email VARCHAR(50) NOT NULL,
+    created_at timestamp without time zone default (now () at time zone 'utc'),
+    status VARCHAR(20) NOT NULL default('to do')
+);
