@@ -14,6 +14,7 @@ class TicketHandler {
 		this.moveTicket = this.moveTicket.bind(this);
 		this.checkUserAccess = this.checkUserAccess.bind(this);
 		this.getGroupId = this.getGroupId.bind(this);
+		this.deleteTicket = this.deleteTicket.bind(this);
 	}
 
 	createTicket(req, res) {
@@ -94,30 +95,79 @@ class TicketHandler {
 			text: "SELECT group_id from tickets WHERE id=$1",
 			values: [ticket_id]
 		};
-		this.getGroupId(ticket_id, res).then(result => {
-			this.checkUserAccess(username, result.rows[0].group_id, res).then(
-				client
-					.query(query)
-					.then(result =>
-						res.json({
-							success: true,
-							message: "ticket successfully moved"
-						})
-					)
-					.catch(error => {
-						console.log(error);
-						this.reject(res, "error checking user");
-					})
-			);
-		});
+		if (!ticket_id) {
+			this.reject(res, "ticket id cannot be empty");
+			return;
+		}
+		if (!status) {
+			this.reject(res, "status cannot be empty");
+			return;
+		}
+		this.getGroupId(ticket_id, res)
+			.then(result => {
+				this.checkUserAccess(username, result, res).then(result => {
+					if (result) {
+						client
+							.query(query)
+							.then(result =>
+								res.json({
+									success: true,
+									message: "ticket successfully moved"
+								})
+							)
+							.catch(error => {
+								console.log(error);
+								this.reject(res, "error checking user");
+							});
+					}
+				});
+			})
+			.catch(error => {
+				console.log(error);
+				this.reject(res, "error moving ticket");
+			});
 	}
 
 	deleteTicket(req, res) {
 		const username = req.decoded;
 		const { ticket_id } = req.body;
-
-		this.checkUserAccess(username, group_id);
+		const query = {
+			text: "DELETE FROM tickets WHERE id = $1",
+			values: [ticket_id]
+		};
+		this.getGroupId(ticket_id, res)
+			.then(result => {
+				if (result) {
+					this.checkUserAccess(username, result, res)
+						.then(result => {
+							if (result) {
+								client
+									.query(query)
+									.then(result => {
+										res.json({
+											success: true,
+											message: "ticket deleted successfully"
+										});
+									})
+									.catch(error => {
+										console.log(error);
+										this.reject(res, "error deleting ticket");
+									});
+							}
+						})
+						.catch(error => {
+							console.log(error);
+							this.reject(res, "error checking user access");
+						});
+				}
+			})
+			.catch(error => {
+				console.log(error);
+				this.reject(res, "ticket group not found");
+			});
 	}
+
+	commentOnTicket(req, res) {}
 
 	getGroupId(ticket_id, res) {
 		const getGroupId = {
@@ -125,20 +175,20 @@ class TicketHandler {
 			values: [ticket_id]
 		};
 
-		client
+		return client
 			.query(getGroupId)
 			.then(result => {
 				if (result.rows[0]) {
-					return result; //Change to promise
+					return result.rows[0].group_id;
 				} else {
 					this.reject(res, "group_id not found");
-					return;
+					return false;
 				}
 			})
 			.catch(error => {
 				console.log(error);
 				this.reject(res, "Error finding ticket's group");
-				return;
+				return false;
 			});
 	}
 
@@ -151,15 +201,16 @@ class TicketHandler {
 			.query(query)
 			.then(result => {
 				if (result.rows[0]) {
-					return result;
+					return true;
 				} else {
 					this.reject(res, "current user cannot update ticket");
-					return;
+					return false;
 				}
 			})
 			.catch(error => {
 				console.log(error);
 				this.reject(res, "error checking user access");
+				return false;
 			});
 	}
 	reject(res, message) {

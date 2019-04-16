@@ -7,9 +7,15 @@ const ticketRouter = express.Router();
 
 ticketRouter.post("/create", ticketHandler.createTicket);
 
-ticketRouter.post("/move", middleware.checkToken, ticketHandler.moveTicket);
+ticketRouter.put("/move", middleware.checkToken, ticketHandler.moveTicket);
 
-ticketRouter.post("/delete", middleware.checkToken, ticketHandler.deleteTicket);
+ticketRouter.delete(
+	"/delete",
+	middleware.checkToken,
+	ticketHandler.deleteTicket
+);
+
+ticketRouter.post("/comment", ticketHandler.commentOnTicket);
 
 // ticketRouter.post("/", middleware.checkToken, ticketRouter.)
 
