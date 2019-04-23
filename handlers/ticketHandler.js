@@ -15,6 +15,8 @@ class TicketHandler {
 		this.checkUserAccess = this.checkUserAccess.bind(this);
 		this.getGroupId = this.getGroupId.bind(this);
 		this.deleteTicket = this.deleteTicket.bind(this);
+		this.commentOnTicket = this.commentOnTicket.bind(this);
+		this.adminComment = this.adminComment.bind(this);
 	}
 
 	createTicket(req, res) {
@@ -84,6 +86,7 @@ class TicketHandler {
 				return;
 			});
 	}
+
 	moveTicket(req, res) {
 		const { ticket_id, status } = req.body;
 		const username = req.decoded;
@@ -167,7 +170,78 @@ class TicketHandler {
 			});
 	}
 
-	commentOnTicket(req, res) {}
+	commentOnTicket(req, res) {
+		const email = req.body.email;
+		const ticket_id = req.body.id;
+		const comment = req.body.comment;
+		const checkEmailQuery = {
+			text: "SELECT * FROM tickets WHERE reporter_email=$1",
+			values: [email]
+		};
+
+		if (!comment) {
+			this.reject(res, "comment field cannot be empty");
+		} else if (!ticket_id) {
+			this.reject(res, "ticket_id field cannot be empty");
+		} else if (!email) {
+			this.reject(res, "email address field cannot be empty");
+		} else {
+			client
+				.query(checkEmailQuery)
+				.then(result => {
+					if (result.rows[0]) {
+						this.addComment(ticket_id, email, comment);
+						res.json({
+							success: true,
+							message: "comment added successfully"
+						});
+					} else {
+						this.reject(res, "invalid email address");
+					}
+				})
+				.catch(error => {
+					console.log(error);
+					this.reject(res, "error checking email address");
+				});
+		}
+	}
+
+	adminComment(req, res) {
+		const username = req.decoded;
+		const ticket_id = req.body.id;
+		const comment = req.body.comment;
+		if (!ticket_id) {
+			this.reject(res, "ticket_id param cannot be empty");
+		} else if (!comment) {
+			this.reject(res, "comment param cannot be empty");
+		}
+		this.getGroupId(ticket_id, res)
+			.then(result => {
+				if (result) {
+					this.checkUserAccess(username, result, res)
+						.then(result => {
+							if (result) {
+								this.addComment(ticket_id, username, comment);
+								res.json({
+									success: true,
+									message: "comment successfully added"
+								});
+							} else {
+								this.reject(res, "user cannot comment on ticket");
+								return false;
+							}
+						})
+						.catch(error => {
+							console.log(error);
+							this.reject(res, "unexpected error");
+						});
+				}
+			})
+			.catch(error => {
+				console.log(error);
+				this.reject(res, "unexpected error");
+			});
+	}
 
 	getGroupId(ticket_id, res) {
 		const getGroupId = {
@@ -218,6 +292,16 @@ class TicketHandler {
 			success: false,
 			message: message
 		});
+	}
+
+	addComment(ticket_id, commenter, content) {
+		const query = {
+			text:
+				"INSERT INTO comments(ticket_id, commenter, content) VALUES($1, $2, $3)",
+			values: [ticket_id, commenter, content]
+		};
+
+		return client.query(query);
 	}
 }
 

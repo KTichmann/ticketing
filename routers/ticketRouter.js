@@ -16,6 +16,11 @@ ticketRouter.delete(
 );
 
 ticketRouter.post("/comment", ticketHandler.commentOnTicket);
+ticketRouter.post(
+	"/admin-comment",
+	middleware.checkToken,
+	ticketHandler.adminComment
+);
 
 // ticketRouter.post("/", middleware.checkToken, ticketRouter.)
 
