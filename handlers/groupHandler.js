@@ -17,7 +17,6 @@ class GroupHandler {
 
 	listGroups(req, res) {
 		const username = req.decoded;
-		const groups = [];
 		const getGroupIds = {
 			text: "SELECT group_id FROM admins WHERE username=$1",
 			values: [username]
@@ -35,7 +34,6 @@ class GroupHandler {
 					text: `SELECT * FROM groups WHERE group_id=$1 ${groupIdText}`,
 					values: [...groupIds.map(obj => obj.group_id)]
 				};
-
 				client
 					.query(groupQuery)
 					.then(result => {

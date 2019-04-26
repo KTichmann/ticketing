@@ -17,6 +17,49 @@ class TicketHandler {
 		this.deleteTicket = this.deleteTicket.bind(this);
 		this.commentOnTicket = this.commentOnTicket.bind(this);
 		this.adminComment = this.adminComment.bind(this);
+		this.getTickets = this.getTickets.bind(this);
+	}
+
+	getTickets(req, res) {
+		const username = req.decoded;
+		const { group_id } = req.params;
+		const query = {
+			text: "SELECT * FROM tickets WHERE group_id=$1",
+			values: [group_id]
+		};
+		if (!group_id) {
+			this.reject(res, "group_id cannot be empty");
+			return;
+		}
+
+		this.checkUserAccess(username, group_id, res)
+			.then(result => {
+				if (result) {
+					client
+						.query(query)
+						.then(result => {
+							if (result.rows) {
+								res.json({
+									success: true,
+									message: "tickets retrieved successfully",
+									data: result.rows
+								});
+							} else {
+								this.reject(res, "cannot fetch tickets");
+							}
+						})
+						.catch(error => {
+							console.log(error);
+							this.reject(res, "error fetching ticket data");
+						});
+				} else {
+					this.reject(res, "user cannot access");
+				}
+			})
+			.catch(error => {
+				console.log(error);
+				this.reject(res, "error checking user access");
+			});
 	}
 
 	createTicket(req, res) {

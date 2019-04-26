@@ -5,7 +5,7 @@ const groupHandler = groupHandlerExports.groupHandler;
 
 const groupRouter = express.Router();
 
-groupRouter.post("/list", middleware.checkToken, groupHandler.listGroups);
+groupRouter.get("/list", middleware.checkToken, groupHandler.listGroups);
 
 groupRouter.post("/create", middleware.checkToken, groupHandler.createGroup);
 

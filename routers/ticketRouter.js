@@ -5,6 +5,12 @@ const ticketHandler = ticketHandlerExports.ticketHandler;
 
 const ticketRouter = express.Router();
 
+ticketRouter.get(
+	"/list/:group_id",
+	middleware.checkToken,
+	ticketHandler.getTickets
+);
+
 ticketRouter.post("/create", ticketHandler.createTicket);
 
 ticketRouter.put("/move", middleware.checkToken, ticketHandler.moveTicket);
