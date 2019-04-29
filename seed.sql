@@ -40,7 +40,7 @@ create table tickets
     (now
     () at time zone 'utc'), status VARCHAR
     (20) NOT NULL default
-    ('to do'));
+    ('toDo'));
 
 
     create table comments
