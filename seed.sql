@@ -38,7 +38,7 @@ create table tickets
     created_at timestamp
     without time zone default
     (now
-    () at time zone 'utc'), status VARCHAR
+    () at time zone 'utc-2'), status VARCHAR
     (20) NOT NULL default
     ('toDo'));
 
@@ -50,6 +50,6 @@ create table tickets
         created_at timestamp
         without time zone default
         (now
-        () at time zone 'utc'), commenter VARCHAR
+        () at time zone 'utc-2'), commenter VARCHAR
         (50) NOT NULL, content VARCHAR
         (100) NOT NULL);
