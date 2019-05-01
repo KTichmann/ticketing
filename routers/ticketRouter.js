@@ -28,6 +28,8 @@ ticketRouter.post(
 	ticketHandler.adminComment
 );
 
+ticketRouter.get("/comments/:ticket_id", ticketHandler.getComments);
+
 // ticketRouter.post("/", middleware.checkToken, ticketRouter.)
 
 module.exports = ticketRouter;

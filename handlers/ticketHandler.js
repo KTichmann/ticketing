@@ -254,7 +254,7 @@ class TicketHandler {
 		const ticket_id = req.body.id;
 		const comment = req.body.comment;
 		if (!ticket_id) {
-			this.reject(res, "ticket_id param cannot be empty");
+			this.reject(res, "id param cannot be empty");
 		} else if (!comment) {
 			this.reject(res, "comment param cannot be empty");
 		}
@@ -283,6 +283,27 @@ class TicketHandler {
 			.catch(error => {
 				console.log(error);
 				this.reject(res, "unexpected error");
+			});
+	}
+
+	getComments(req, res) {
+		const { ticket_id } = req.params;
+		const query = {
+			text: `SELECT * FROM comments WHERE ticket_id=$1`,
+			values: [ticket_id]
+		};
+
+		client
+			.query(query)
+			.then(result => {
+				res.json({
+					success: true,
+					data: result.rows
+				});
+			})
+			.catch(error => {
+				console.log(error);
+				this.reject(res, "unexpected error fetching comments");
 			});
 	}
 
