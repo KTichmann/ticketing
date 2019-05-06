@@ -10,4 +10,6 @@ userRouter.post("/authenticate", userHandler.authenticate);
 
 userRouter.get("/verify/:hash", userHandler.verify);
 
+userRouter.get("/check-user/:user", userHandler.checkUser);
+
 module.exports = userRouter;

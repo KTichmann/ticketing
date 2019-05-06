@@ -13,6 +13,7 @@ groupRouter.post("/update", middleware.checkToken, groupHandler.updateGroup);
 
 groupRouter.post("/delete", middleware.checkToken, groupHandler.deleteGroup);
 
+groupRouter.post("/add-admin", middleware.checkToken, groupHandler.addAdmin);
 // groupRouter.post("/", middleware.checkToken, groupHandler.)
 
 module.exports = groupRouter;
