@@ -254,7 +254,6 @@ class UserHandler {
 				rejectUnauthorized: false
 			}
 		});
-		console.log(PASS);
 
 		const mailOptions = {
 			from: "thebobewithyou@gmail.com",
@@ -265,7 +264,7 @@ class UserHandler {
 			<br>
 			<p>Thanks for signing up to Ticketing!</p>
 			<br>
-			<p>Please verify your account by clicking the link below: <br><a href="http:/localhost:5000/user/verify/${hash}">Verify Account</a></p>
+			<p>Please verify your account by clicking the link below: <br><a href="https://ktichmann-ticketing-system.herokuapp.com/user/verify/${hash}">Verify Account</a></p>
 			<br>
 			<p>The Ticketing Team</p>
 			`
