@@ -85,10 +85,11 @@ class TicketHandler {
 		if (!reporter_email) {
 			this.reject(res, "reporter_email cannot be empty");
 			return;
-		} else if (!reporter_email.match(checkEmailRegex)) {
-			this.reject(res, "reporter_email must be a valid email address");
-			return;
 		}
+		// else if (!reporter_email.match(checkEmailRegex)) {
+		// 	this.reject(res, "reporter_email must be a valid email address");
+		// 	return;
+		// }
 		//Check if group exists
 		const checkGroupIdQuery = {
 			text: "SELECT * FROM groups WHERE group_id=$1",
